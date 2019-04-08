@@ -1,0 +1,61 @@
+{
+    "content": [
+    ],
+    "coprocessor": [
+        "CLEAR(1, 1, 1)",
+        "CMD_TEXT(240, 32, 28, OPT_CENTER, \"Screen Diagnostics\")",
+        "",
+        "",
+        "BEGIN(POINTS)",
+        "POINT_SIZE(246)",
+        "TAG(0)",
+        "VERTEX2II(30, 150, 0, 0)",
+        "TAG(1)",
+        "VERTEX2II(30, 30, 0, 0)",
+        "TAG(2)",
+        "VERTEX2II(120, 245, 0, 0)",
+        "TAG(3)",
+        "VERTEX2II(180, 245, 0, 0)",
+        "TAG(4)",
+        "VERTEX2II(240, 245, 0, 0)",
+        "TAG(5)",
+        "VERTEX2II(300, 245, 0, 0)",
+        "TAG(6)",
+        "VERTEX2II(360, 245, 0, 0)",
+        "TAG(7)",
+        "VERTEX2II(450, 30, 0, 0)",
+        "TAG(8)",
+        "VERTEX2II(450, 150, 0, 0)",
+        "POINT_SIZE(600)",
+        "TAG(9)",
+        "VERTEX2II(160, 145, 0, 0)",
+        "TAG(10)",
+        "VERTEX2II(320, 145, 0, 0)",
+        "END()",
+        "",
+        "CMD_TEXT(160, 90, 28, OPT_CENTER, \"Shift Lights\")",
+        "CMD_TEXT(320, 90, 28, OPT_CENTER, \"Reset MCU\")",
+        "CMD_TEXT(65, 150, 28, OPT_CENTER, \"PL\")",
+        "CMD_TEXT(65, 30, 28, OPT_CENTER, \"TR\")",
+        "CMD_TEXT(120, 215, 28, OPT_CENTER, \"SW1\")",
+        "CMD_TEXT(180, 215, 28, OPT_CENTER, \"SW2\")",
+        "CMD_TEXT(240, 215, 28, OPT_CENTER, \"MID\")",
+        "CMD_TEXT(300, 215, 28, OPT_CENTER, \"SW4\")",
+        "CMD_TEXT(360, 215, 28, OPT_CENTER, \"SW5\")",
+        "CMD_TEXT(415, 30, 28, OPT_CENTER, \"TR\")",
+        "CMD_TEXT(415, 150, 28, OPT_CENTER, \"PR\")"
+    ],
+    "displayList": [
+        ""
+    ],
+    "project": {
+        "device": 2048
+    },
+    "registers": {
+        "hSize": 480,
+        "macro": [
+            ""
+        ],
+        "vSize": 272
+    }
+}
