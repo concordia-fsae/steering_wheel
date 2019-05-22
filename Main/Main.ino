@@ -12,7 +12,7 @@ void setup()
 		Serial.print("MCP2515 Connection Failed, retrying ");
 		Serial.println(CAN.begin(CAN_1000KBPS, PB12));
 		delay(100);
-	}	
+	}
 	Serial.println("MCP2515 Connection Successfull!");
 */
 
@@ -33,7 +33,7 @@ void setup()
 
 	boot_display();
 	led_startup();
-	
+
 /* Uncomment when calibrating touch screen
 	for(size_t i=0; i<6; i++)
 	{
@@ -135,7 +135,7 @@ void loop()
 		diag_shift = 0;
 		FTImpl.GetTagXY(sTagxy);
 		tag = sTagxy.tag;
-		
+
 		int colors [2] = {0x0, 0x00FF00};
 		switch(tag)
 		{
@@ -232,6 +232,11 @@ void loop()
 			error_overlay();
 		}
 
+		if(st_flag != 0)
+		{
+				flag_display(st_flag);
+		}
+
 		FTImpl.DLEnd();
 		FTImpl.Finish();
 	} else {
@@ -318,30 +323,82 @@ void MCP2515_ISR()
 	else if(CAN.getCanId() == recv_id + 2)
 	{
 		f_temp = (recv_msg[0] * 4);
+		st_flag = (recv_msg[1]);
 	}
-	
-	
 }
 
 
 void error_overlay()
 {
 	FTImpl.Begin(FT_RECTS);
-	
+
 	FTImpl.ColorA(64);
 	FTImpl.ColorRGB(71, 71, 71);
 	FTImpl.Vertex2ii(0, 0, 0, 0);
 	FTImpl.Vertex2ii(480, 272, 0, 0);
-	
-	
+
+
 	FTImpl.ColorA(255);
 	FTImpl.ColorRGB(0, 0, 0);
 	FTImpl.Vertex2ii(50, 50, 0, 0);
 	FTImpl.Vertex2ii(433, 222, 0, 0);
 	FTImpl.End();
-	
+
 	FTImpl.ColorRGB(255, 0, 0);
 	FTImpl.Cmd_Text(240, 136, 30, FT_OPT_CENTER, warnings[warning]);
+}
+
+
+void flag_display(int flag)
+{
+	int color;
+	switch(flag){
+		case 1:
+			color = 0x00FF00;
+			break;
+		case 2:
+			color = 0xF6FF00;
+			break;
+		case 3:
+			color = 0xFF0000;
+			break;
+		case 4:
+			color = 0XFFA500;
+			break;
+	}
+
+	char *text;
+	switch(flag){
+		case 1:
+			text = "GO GO GO";
+			break;
+		case 2:
+			text = "SLOW DOWN";
+			break;
+		case 3:
+			text = "STOP";
+			break;
+		case 4:
+			text = "EGRESS";
+			break;
+	}
+
+	FTImpl.Begin(FT_RECTS);
+
+	FTImpl.ColorA(64);
+	FTImpl.ColorRGB(71, 71, 71);
+	FTImpl.Vertex2ii(0, 0, 0, 0);
+	FTImpl.Vertex2ii(480, 272, 0, 0);
+
+
+	FTImpl.ColorA(255);
+	FTImpl.ColorRGB(color);
+	FTImpl.Vertex2ii(50, 50, 0, 0);
+	FTImpl.Vertex2ii(433, 222, 0, 0);
+	FTImpl.End();
+
+	FTImpl.ColorRGB(255, 255, 255);
+	FTImpl.Cmd_Text(240, 136, 30, FT_OPT_CENTER, text);
 }
 
 
@@ -349,7 +406,7 @@ void main_display()
 {
 	uint32_t col = 0;
 	int x = 0;
-	int y = 0;	
+	int y = 0;
 
 	// Top Left Pill (Battery Voltage)
 	col = (voltage > 12) ? 0x00FF00 : 0x0000FF;
@@ -366,7 +423,7 @@ void main_display()
 	FTImpl.Cmd_Text(x, y, 28, FT_OPT_CENTER, ".");
 	FTImpl.Cmd_Number(x+7, y, 28, FT_OPT_CENTER, v_fl);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "V");
-	
+
 
 	// Top Right Pill (Coolant Temp)
 	col = (c_temp > 100) ? 0xFF0000 : 0x00FF00;
@@ -384,14 +441,14 @@ void main_display()
 	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, c_temp);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "C");
 	FTImpl.Cmd_Text(x+17, y-10, 26, FT_OPT_CENTER, "o");
-	
+
 
 	// Middle Left Pill (Oil Pressure)
 	x = 45;
 	y = 170;
 	col = (o_press > 380) ? 0x00FF00 : 0x0000FF;
 	col = (o_press <= 100) ? 0xFF0000 : col;
-	
+
 	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(x, y-25, 26, FT_OPT_CENTER, "O_Press");
 	FTImpl.ColorRGB(col);
@@ -402,7 +459,7 @@ void main_display()
 	FTImpl.Cmd_Text(x+17, y-8, 26, FT_OPT_CENTER, "o");
 
 
-	// Middle Right Pill (Fuel Pressure) 
+	// Middle Right Pill (Fuel Pressure)
 	col = (f_press > 380) ? 0x00FF00 : 0x0000FF;
 	col = (f_press <= 100) ? 0xFF0000 : col;
 
@@ -433,14 +490,14 @@ void main_display()
 	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, o_temp);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "C");
 	FTImpl.Cmd_Text(x+17, y-8, 26, FT_OPT_CENTER, "o");
-	
+
 
 	// Bottom Right Pill (Fuel Temp)
 	x = 435;
 	y = 235;
 	col = (f_temp > 380) ? 0x00FF00 : 0x0000FF;
 	col = (f_temp <= 100) ? 0xFF0000 : col;
-	
+
 	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(x, y-25, 26, FT_OPT_CENTER, "F_Temp");
 	FTImpl.ColorRGB(col);
@@ -449,13 +506,13 @@ void main_display()
 	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, f_temp);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "C");
 	FTImpl.Cmd_Text(x+17, y-8, 26, FT_OPT_CENTER, "o");
-	
+
 
 	FTImpl.ColorRGB(255, 255, 255);
 	FTImpl.Cmd_Number(240, 45, 0, FT_OPT_CENTER, rpm);
 
 	char * gears [6]= {"N", "1", "2", "3", "4", "5"};
-	
+
 	if(gear > -1 && gear < 7)
 	{
 		FTImpl.Cmd_Text(240, 156, 0, FT_OPT_CENTER, gears[gear]);
@@ -477,24 +534,24 @@ void launch_display()
 	FTImpl.Vertex2ii(160, 0, 0, 0);
 	FTImpl.Vertex2ii(160, 272, 0, 0);
 	FTImpl.End();
-	
+
 	FTImpl.Begin(FT_LINES);
 	FTImpl.Vertex2ii(320, 0, 0, 0);
 	FTImpl.Vertex2ii(320, 272, 0, 0);
 	FTImpl.End();
-	
+
 	FTImpl.Cmd_Text(80, 15, 28, FT_OPT_CENTER, "Best");
 	FTImpl.Cmd_Text(240, 15, 28, FT_OPT_CENTER, "Last");
 	FTImpl.Cmd_Text(240, 32, 28, FT_OPT_CENTER, "Launch");
 	FTImpl.Cmd_Text(400, 15, 28, FT_OPT_CENTER, "Current");
-	
+
 	FTImpl.Cmd_Text(348, 35, 23, FT_OPT_CENTER, "RPM:");
 	FTImpl.Cmd_Number(400, 55, 30, FT_OPT_CENTER, launch_rpm*100);
 	FTImpl.Tag(4);
 	FTImpl.Cmd_Button(340, 70, 48, 48, 27, 0, "-");
 	FTImpl.Tag(5);
 	FTImpl.Cmd_Button(410, 70, 48, 48, 27, 0, "+");
-	
+
 	FTImpl.Cmd_Text(355, 133, 23, FT_OPT_CENTER, "Thresh:");
 	FTImpl.Cmd_Number(400, 155, 30, FT_OPT_CENTER, launch_th_speed);
 	FTImpl.Tag(6);
@@ -511,7 +568,7 @@ void launch_display()
 void diag_display()
 {
 	FTImpl.Cmd_Text(240, 32, 28, FT_OPT_CENTER, "Diagnostics");
-	
+
 	FTImpl.Begin(FT_POINTS);
 	FTImpl.PointSize(600);
 
@@ -524,12 +581,12 @@ void diag_display()
 	if(diag_fuel_st) FTImpl.ColorRGB(0, 255, 0);
 	FTImpl.Vertex2ii(230, 145, 0, 0);
 	FTImpl.ColorRGB(255, 255, 255);
-	
-	FTImpl.Tag(3);	
+
+	FTImpl.Tag(3);
 	if(diag_rst) FTImpl.ColorRGB(0, 255, 0);
 	FTImpl.Vertex2ii(360, 145, 0, 0);
 	FTImpl.ColorRGB(255, 255, 255);
-	
+
 	FTImpl.End();
 
 
@@ -573,17 +630,17 @@ void led_error()
 		led_err_st = !led_err_st;
 		shift.show();
 	}
-	
+
 }
 
 
 void led_startup() // function that generates the startup sequence for the shift lights
-{   
+{
 	// Startup sequence for shift lights
 
 	for(size_t j=0; j<NEOS+2; j++)
 	{
-	  
+
 		if(j>=2)
 		{
 			shift.setPixelColor(j-2, 0x0);
@@ -786,10 +843,10 @@ bool boot_display()
 
 	/* Set the Display & audio pins */
 	FTImpl.SetDisplayEnablePin(FT_DISPENABLE_PIN);
-	FTImpl.SetAudioEnablePin(FT_AUDIOENABLE_PIN); 
-	
-	
-	FTImpl.DisplayOn(); 
+	FTImpl.SetAudioEnablePin(FT_AUDIOENABLE_PIN);
+
+
+	FTImpl.DisplayOn();
 	FTImpl.AudioOff();
 
 
