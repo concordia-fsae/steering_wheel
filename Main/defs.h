@@ -54,7 +54,7 @@ MCP_CAN CAN;
 
 
 float voltage;
-int v_int, v_fl, o_temp, o_press, c_temp, f_press, f_temp, gear, rpm;
+int v_int, v_fl, o_temp, o_press, c_temp, f_press, f_temp, gear, rpm, st_flag;
 bool sw1, sw2, sw3, sw4, pl, pr, tl, tr, mid, launch, traction, autoshift, remote_start;
 
 
@@ -73,7 +73,7 @@ uint8_t status2 = 0;			// second variable containing button states
 uint16_t transmit_ID = 0xA0;	// CAN Bus transmit ID (messages will be sent with this ID)
 uint32_t recv_id = 0x80;		// CAN Bus receive ID (messages with this ID will be read)
 uint8_t recv_len;				// length of received message
-uint8_t recv_msg[9];			// the message (4 bytes)
+uint8_t recv_msg[10];			// the message (4 bytes)
 uint8_t buff [7] = {status1, status2, launch_th_speed, launch_rpm};	// message to be sent, contains statuses
 
 
@@ -143,7 +143,7 @@ void common_display()
 {
 	FTImpl.PointSize(160);
 	FTImpl.Begin(FT_POINTS);
-	
+
 
 	if(tl)
 	{
@@ -154,8 +154,8 @@ void common_display()
 		FTImpl.ColorRGB(255, 255, 255);
 	}
 	FTImpl.Vertex2ii(20, 35, 1, 0);
-	
-	
+
+
 	if(tr)
 	{
 		FTImpl.ColorRGB(0, 255, 0);
@@ -165,7 +165,7 @@ void common_display()
 		FTImpl.ColorRGB(255, 255, 255);
 	}
 	FTImpl.Vertex2ii(445, 35, 1, 0);
-	
+
 
 	if(sw1)
 	{
@@ -176,8 +176,8 @@ void common_display()
 		FTImpl.ColorRGB(255, 255, 255);
 	}
 	FTImpl.Vertex2ii(150, 255, 1, 0);
-	
-	
+
+
 	if(sw2)
 	{
 		FTImpl.ColorRGB(0, 255, 0);
@@ -187,8 +187,8 @@ void common_display()
 		FTImpl.ColorRGB(255, 255, 255);
 	}
 	FTImpl.Vertex2ii(210, 255, 1, 0);
-	
-	
+
+
 	if(sw3)
 	{
 		FTImpl.ColorRGB(0, 255, 0);
@@ -199,27 +199,27 @@ void common_display()
 	}
 	FTImpl.Vertex2ii(270, 255, 1, 0);
 	FTImpl.End();
-	
+
 
 
 	FTImpl.ColorRGB(255, 255, 255);
 	FTImpl.Cmd_Text(20, 15, 21, FT_OPT_CENTER, "DRS");
-	
+
 	FTImpl.ColorRGB(255, 255, 255);
 	FTImpl.Cmd_Text(445, 15, 21, FT_OPT_CENTER, "LC");
-	
+
 
 
 	FTImpl.ColorRGB(255, 255, 255);
 	FTImpl.Cmd_Text(150, 235, 21, FT_OPT_CENTER, "LC");
-	
+
 	FTImpl.ColorRGB(255, 255, 255);
 	FTImpl.Cmd_Text(210, 235, 21, FT_OPT_CENTER, "AS");
-	
+
 	FTImpl.ColorRGB(255, 255, 255);
 	FTImpl.Cmd_Text(270, 237, 21, FT_OPT_CENTER, "CTRL");
-	
-	
+
+
 	FTImpl.ColorRGB(255, 255, 255);
 	FTImpl.Cmd_Text(330, 237, 21, FT_OPT_CENTER, "WC");
 
@@ -231,7 +231,7 @@ void common_display()
 	{
 		FTImpl.Cmd_Text(330, 255, 28, FT_OPT_CENTER, "W");
 	}
-	
+
 	if(remote_start)
 	{
 		FTImpl.ColorRGB(255, 0, 0);
