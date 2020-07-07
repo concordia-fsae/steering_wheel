@@ -24,7 +24,7 @@ void setup()
 
 	uint8_t inputs [13] = {PB3, PB4, PB6, PB8, PA8, PA9, PA10, PA15, PB1, PA7, PA6, PA5, PA4};
 
-	for(size_t i=0; i<13; i++)
+	for(int i=0; i<13; i++)
 	{
 		pinMode(inputs[i], INPUT_PULLUP);
 	}
@@ -36,7 +36,7 @@ void setup()
 	led_startup();
 
 /* Uncomment when calibrating touch screen
-	for(size_t i=0; i<6; i++)
+	for(int i=0; i<6; i++)
 	{
 		Serial.print(touch_matrix[i]); Serial.print(" ");
 	}
@@ -143,7 +143,7 @@ void loop()
 		case 1:
 		// case 1, shift light diagnostics
 			diag_shift = 1;
-			for(size_t i=0; i<NEOS; i++)
+			for(int i=0; i<NEOS; i++)
 			{
 				shift.setPixelColor(i, colors[diag_shift]);
 			}
@@ -551,7 +551,7 @@ void diag_display()
 }
 
 void clear(){   // function to clear shift lights (turn all off)
-  for(size_t i=0; i<NEOS; i++){
+  for(int i=0; i<NEOS; i++){
     shift.setPixelColor(i, 0x0);
   }
   shift.show();
@@ -566,7 +566,7 @@ void led_error()
 		l_time_1 = c_time;
 		int colors [2] = {0x0, 0xFF0000};
 
-		for(size_t i=0; i<NEOS; i++)
+		for(int i=0; i<NEOS; i++)
 		{
 			shift.setPixelColor(i, colors[led_err_st]);
 		}
@@ -582,7 +582,7 @@ void led_startup() // function that generates the startup sequence for the shift
 {
 	// Startup sequence for shift lights
 
-	for(size_t j=0; j<NEOS+2; j++)
+	for(int j=0; j<NEOS+2; j++)
 	{
 
 		if(j>=2)
@@ -599,7 +599,7 @@ void led_startup() // function that generates the startup sequence for the shift
 		delay(10);
 	}
 
-	for(size_t k=NEOS+1; k>0; k--)
+	for(int k=NEOS+1; k>0; k--)
 	{
 		int j = k-2;
 		if(j <= NEOS-3)
@@ -617,7 +617,7 @@ void led_startup() // function that generates the startup sequence for the shift
 		delay(10);
 	}
 
-	for(size_t i=0; i<NEOS; i++){
+	for(int i=0; i<NEOS; i++){
 		shift.setPixelColor(i, 0xFFFFFF);
 	}
 
@@ -647,7 +647,7 @@ void shift_lights(){         // controls shift lights for each gear and RPM rang
 			blink(.5, 2, red);
 		}
 */
-		for(size_t i=0; i<num; i++){    // set the lights to the appropriate colors
+		for(int i=0; i<num; i++){    // set the lights to the appropriate colors
 			if(i<segs[0]){
 				shift.setPixelColor(i, 0xFF0000);
 			} else if(i<segs[1]){
@@ -673,7 +673,7 @@ void shift_lights(){         // controls shift lights for each gear and RPM rang
           blink(.5, 2, red);
         }
 */
-        for(size_t i=0; i<num; i++){
+        for(int i=0; i<num; i++){
           if(i<segs[0]){
             shift.setPixelColor(i, 0xFF0000);
           } else if(i<segs[1]){
@@ -698,7 +698,7 @@ void shift_lights(){         // controls shift lights for each gear and RPM rang
           blink(.5, 2, red);
         }
 */
-        for(size_t i=0; i<num; i++){
+        for(int i=0; i<num; i++){
           if(i<segs[0]){
             shift.setPixelColor(i, 0xFF0000);
           } else if(i<segs[1]){
@@ -722,7 +722,7 @@ void shift_lights(){         // controls shift lights for each gear and RPM rang
           blink(.5, 2, red);
         }
 */
-        for(size_t i=0; i<num; i++){
+        for(int i=0; i<num; i++){
           if(i<segs[0]){
             shift.setPixelColor(i, 0xFF0000);
           } else if(i<segs[1]){
@@ -746,7 +746,7 @@ void shift_lights(){         // controls shift lights for each gear and RPM rang
           blink(.5, 2, green);
         }
 */
-        for(size_t i=0; i<num; i++){
+        for(int i=0; i<num; i++){
           if(i<segs[0]){
             shift.setPixelColor(i, 0xFF0000);
           } else if(i<segs[1]){
