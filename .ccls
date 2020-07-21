@@ -5,13 +5,13 @@ clang
 
 -IC:/Programming/steering_wheel/include
 -IC:/Programming/steering_wheel/src
+-IC:/Programming/steering_wheel/lib/Adafruit_NeoPixel_stm
+-IC:/Programming/steering_wheel/lib/Adafruit_GFX_Library
 -IC:/Users/lopezr/.platformio/packages/framework-arduinoststm32-maple/STM32F1/libraries/EEPROM
--IC:/Programming/steering_wheel/lib/CAN_BUS_Shield-STM
 -IC:/Programming/steering_wheel/lib/FTDI_FT800
 -IC:/Users/lopezr/.platformio/packages/framework-arduinoststm32-maple/STM32F1/libraries/Wire
 -IC:/Users/lopezr/.platformio/packages/framework-arduinoststm32-maple/STM32F1/libraries/Wire/utility
--IC:/Programming/steering_wheel/lib/Adafruit_NeoPixel_stm
--IC:/Programming/steering_wheel/lib/Adafruit_GFX_Library
+-IC:/Programming/steering_wheel/lib/CAN_BUS_Shield-STM
 -IC:/Users/lopezr/.platformio/packages/framework-arduinoststm32-maple/STM32F1/libraries/SPI/src
 -IC:/Users/lopezr/.platformio/packages/framework-arduinoststm32-maple/STM32F1/cores/maple
 -IC:/Users/lopezr/.platformio/packages/framework-arduinoststm32-maple/STM32F1/system/libmaple
