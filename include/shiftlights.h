@@ -1,14 +1,16 @@
 #ifndef SHIFTLIGHTS_H
 #define SHIFTLIGHTS_H
 
+// Includes
 #include <Adafruit_NeoPixel_stm.h>
 #include <Adafruit_GFX.h>
 
-// shift light defs
+// Local Definitions
 #define kSLPin PB10
 #define kSLCount 16
 #define kSLBrightness 10
 
+// Public Class Definitions
 
 class ShiftLights {
 public:
@@ -32,4 +34,6 @@ private:
 		{5000, 12500},		// fifth gear
 	};
 };
+
+
 #endif // SHIFTLIGHTS_H
