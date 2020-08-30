@@ -23,8 +23,8 @@ unsigned int can_timeout = 5000;		// time without CAN message before error occur
 #define fuel_pump 0b01000000
 #define remote_start_st 0b00100000
 
-float voltage;
-int v_int, v_fl, o_temp, o_press, c_temp, f_press, f_temp, gear, rpm;
+float voltage = 0;
+int v_int, v_fl, o_temp, o_press, c_temp, f_press, f_temp, gear, rpm = 0;
 bool sw1, sw2, sw3, sw4, pl, pr, tl, tr, mid, launch, traction, autoshift, remote_start;
 
 

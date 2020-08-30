@@ -55,16 +55,6 @@ void setup(){
 
 	// not sure if this even does anything
 	CAN.init_Filt(0, 0, recv_id);
-
-	// might not be necessary, might be able to save memory by not defining globally
-	voltage = 0;
-	o_temp = 0;
-	o_press = 0;
-	c_temp = 0;
-	f_press = 0;
-	f_temp = 0;
-	gear = 0;
-	rpm = 0;
 }
 
 void loop(){
