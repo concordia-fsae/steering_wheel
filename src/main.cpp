@@ -192,16 +192,19 @@ void loop(){
 void get_inputs(uint8_t *status1, uint8_t *status2){
 	c_time = millis();
 
-	mid		=	!digitalRead(PB1);
-	sw1 	=	!digitalRead(PB8);
-	sw2 	=	!digitalRead(PB6);
-	sw3 	=	!digitalRead(PB4);
-	sw4 	=	!digitalRead(PB3);
-	pl 		=	!digitalRead(PA8);
-	pr 		=	!digitalRead(PA9);
-	tl 		=	!digitalRead(PA10);
-	tr		=	!digitalRead(PA15);
-	
+	uint32_t portb = GPIOB->regs->IDR;
+	uint32_t porta = GPIOA->regs->IDR;
+
+	mid		=	!(portb & 0b10);
+	sw1		=	!(portb & 0b100000000);
+	sw2		=	!(portb & 0b1000000);
+	sw3		=	!(portb & 0b10000);
+	sw4		=	!(portb & 0b1000);
+	pl		=	!(porta & 0b100000000);
+	pr		=	!(porta & 0b1000000000);
+	tl		=	!(porta & 0b10000000000);
+	tr		=	!(porta & 0b1000000000000000);
+
 
 	if(tl && tr){
 		tr_deb = (!tr_deb) ? c_time : tr_deb;
@@ -221,6 +224,7 @@ void get_inputs(uint8_t *status1, uint8_t *status2){
 	// tr_deb = (c_time - tr_deb > 500) ? (tr = !tr) && 0 : tr_deb;
 
 
+	// dismiss the current warning if either tl or tr is pressed, intercept their respective functions
 	if((tl || tr) && warning != -1){
 		if(!(dismissed & (warning+1))){
 			dismissed = dismissed | (warning+1);
@@ -230,21 +234,25 @@ void get_inputs(uint8_t *status1, uint8_t *status2){
 		}
 	}
 
+	// un-dismiss the warnings if the middle button is pressed
 	dismissed = mid ? 0 : dismissed;
 
+	// create the status bitfields
 	*status1 = 0;
 	*status2 = 0;
 
-	*status1 = sw1 ? *status1 | sw1_st : *status1;
-	*status1 = sw2 ? *status1 | sw2_st : *status1;
-	*status1 = sw3 ? *status1 | sw3_st : *status1;
-	*status1 = sw4 ? *status1 | sw4_st : *status1;
-	*status1 = tr ? *status1 | tl_st : *status1;
-	*status1 = tl ? *status1 | tr_st : *status1;
-	*status1 = pr ? *status1 | pl_st : *status1;
-	*status1 = pl ? *status1 | pr_st : *status1;
+	*status1 = *status1
+					| sw1 
+					| sw2 << 1 
+					| sw3 << 2 
+					| sw4 << 3 
+					| tr << 4 
+					| tl << 5 
+					| pr << 6 
+					| pl << 7;
 
-	*status2 = mid ? *status2 | mid_st : *status2;
-	*status2 = diag_fuel_st ? *status2 | fuel_pump : *status2;
-	*status2 = remote_start ? *status2 | remote_start_st : *status2;
+	*status2 = *status2
+					| mid
+					| diag_fuel_st << 1
+					| remote_start << 2;
 }

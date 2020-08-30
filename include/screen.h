@@ -279,7 +279,6 @@ void main_display(){
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "C");
 	FTImpl.Cmd_Text(x+17, y-8, 26, FT_OPT_CENTER, "o");
 
-
 	FTImpl.ColorRGB(255, 255, 255);
 	FTImpl.Cmd_Number(240, 45, 0, FT_OPT_CENTER, rpm);
 
@@ -299,97 +298,55 @@ void common_display()
 {
 	FTImpl.PointSize(160);
 	FTImpl.Begin(FT_POINTS);
+	
+	uint32_t col;
 
-
-	if(tl)
-	{
-		FTImpl.ColorRGB(0, 255, 0);
-	}
-	else
-	{
-		FTImpl.ColorRGB(255, 255, 255);
-	}
+	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(20, 35, 1, 0);
 
-
-	if(tr)
-	{
-		FTImpl.ColorRGB(0, 255, 0);
-	}
-	else
-	{
-		FTImpl.ColorRGB(255, 255, 255);
-	}
+	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(445, 35, 1, 0);
 
-
-	if(sw1)
-	{
-		FTImpl.ColorRGB(0, 255, 0);
-	}
-	else
-	{
-		FTImpl.ColorRGB(255, 255, 255);
-	}
+	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(150, 255, 1, 0);
 
-
-	if(sw2)
-	{
-		FTImpl.ColorRGB(0, 255, 0);
-	}
-	else
-	{
-		FTImpl.ColorRGB(255, 255, 255);
-	}
+	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(210, 255, 1, 0);
 
-
-	if(sw3)
-	{
-		FTImpl.ColorRGB(0, 255, 0);
-	}
-	else
-	{
-		FTImpl.ColorRGB(255, 255, 255);
-	}
+	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(270, 255, 1, 0);
 	FTImpl.End();
 
 
-
-	FTImpl.ColorRGB(255, 255, 255);
+	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(20, 15, 21, FT_OPT_CENTER, "DRS");
 
-	FTImpl.ColorRGB(255, 255, 255);
+	FTImpl.ColorRGB(0xFFFFF);
 	FTImpl.Cmd_Text(445, 15, 21, FT_OPT_CENTER, "LC");
 
-
-
-	FTImpl.ColorRGB(255, 255, 255);
+	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(150, 235, 21, FT_OPT_CENTER, "LC");
 
-	FTImpl.ColorRGB(255, 255, 255);
+	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(210, 235, 21, FT_OPT_CENTER, "AS");
 
-	FTImpl.ColorRGB(255, 255, 255);
+	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(270, 237, 21, FT_OPT_CENTER, "CTRL");
 
 
-	FTImpl.ColorRGB(255, 255, 255);
+	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(330, 237, 21, FT_OPT_CENTER, "WC");
 
-	if(!sw4)
-	{
-		FTImpl.Cmd_Text(330, 255, 28, FT_OPT_CENTER, "D");
-	}
-	else
-	{
-		FTImpl.Cmd_Text(330, 255, 28, FT_OPT_CENTER, "W");
-	}
+	const char *d_w = !sw4 ? "D" : "W";
+	FTImpl.Cmd_Text(330, 255, 28, FT_OPT_CENTER, d_w);
 
-	if(remote_start)
-	{
+
+	if(remote_start){
 		FTImpl.ColorRGB(255, 0, 0);
 		FTImpl.Cmd_Text(240, 208, 27, FT_OPT_CENTER, "IGN");
 	}
