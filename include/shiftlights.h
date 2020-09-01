@@ -10,8 +10,8 @@
 #define kSLCount 16
 #define kSLBrightness 10
 
-// Public Class Definitions
 
+// Public Class Definitions
 class ShiftLights {
 public:
 	ShiftLights(uint8_t, uint8_t, uint8_t);
