@@ -4,6 +4,7 @@ ShiftLights shift_lights = ShiftLights(kSLPin, kSLCount, kSLBrightness);
 
 // This is a change.
 // This is another change.
+// This is a third change but it is not added.
 
 void setup(){
 	Serial.begin(115200);
