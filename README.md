@@ -1,4 +1,8 @@
-### Setup Instructions
+### This code now has Travis CI setup for continuous integration testing!
+Current build status: [![Build Status](https://travis-ci.com/concordia-fsae/steering_wheel.svg?branch=master)](https://travis-ci.com/concordia-fsae/steering_wheel)
+
+
+# Setup Instructions
   1. Setup PlatformIO in IDE of choice (i.e. VSCode)
   2. Navigate to PlatformIO install directory (usually User_folder/.platformio)
   3. Enter `packages` directory and rename `framework-arduinoststm32-maple` to `framework-arduinoststm32-maple-bak`
