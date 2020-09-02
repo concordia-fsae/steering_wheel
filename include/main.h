@@ -20,7 +20,6 @@ unsigned long int l_time_10 = 0;		// last time a 10Hz event occured
 unsigned long int l_time_5 = 0;			// last time a 5Hz event occured
 unsigned long int l_time_1 = 0;			// last time a 1Hz event occured
 
-
 // constants for each refresh rate
 unsigned int fifty_hz = 20;
 unsigned int ten_hz = 100;
@@ -43,7 +42,11 @@ bool diag_rst = 0;
 bool diag_fuel_st = 0;
 
 // Local Function Prototypes
-void get_inputs(uint8_t*, uint8_t*);
+void get_inputs(uint8_t&, uint8_t&);
 
+// External Variables
+extern veh_data_S veh;
+extern io_state_S io;
+extern launch_cnf_S launch;
 
 #endif // MAIN_H

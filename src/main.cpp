@@ -65,8 +65,8 @@ void loop(){
 		l_time_50 = c_time;
 		// code for sending to Motec over CAN
 		uint8_t status1, status2;
-		get_inputs(&status1, &status2);
-		uint8_t buff[4] = {status1, status2, launch_th_speed, launch_rpm};
+		get_inputs(status1, status2);
+		uint8_t buff[4] = {status1, status2, launch.launch_th_speed, launch.launch_rpm};
 		CAN.sendMsgBuf(transmit_ID, 0, 4, buff);
 		c_time = millis();
 
@@ -80,10 +80,10 @@ void loop(){
 			warning = 0;
 		}
 
-		v_int = voltage;
-		v_fl = (float)((voltage - v_int)*10);
+		veh.v_int = veh.voltage;
+		veh.v_fl = (float)((veh.voltage - veh.v_int)*10);
 
-		shift_lights.Update(gear, rpm);
+		shift_lights.Update(veh.gear, veh.rpm);
 		c_time = millis();
 	}
 
@@ -121,7 +121,7 @@ void loop(){
 			}
 			else if(c_time - launch_rpm_minus_deb > 50){
 				launch_rpm_minus_deb = 0;
-				if(launch_rpm > 20){launch_rpm -= 2;}
+				if(launch.launch_rpm > 20){launch.launch_rpm -= 2;}
 			}
 			break;
 		case 5:
@@ -130,7 +130,7 @@ void loop(){
 			}
 			else if(c_time - launch_rpm_plus_deb > 50){
 				launch_rpm_plus_deb = 0;
-				if(launch_rpm < 80){launch_rpm += 2;}
+				if(launch.launch_rpm < 80){launch.launch_rpm += 2;}
 			}
 			break;
 		case 6:
@@ -139,7 +139,7 @@ void loop(){
 			}
 			else if(c_time - launch_thresh_minus_deb > 50){
 				launch_thresh_minus_deb = 0;
-				if(launch_th_speed > 15){launch_th_speed -= 5;}
+				if(launch.launch_th_speed > 15){launch.launch_th_speed -= 5;}
 			}
 			break;
 		case 7:
@@ -148,7 +148,7 @@ void loop(){
 			}
 			else if(c_time - launch_thresh_plus_deb > 50){
 				launch_thresh_plus_deb = 0;
-				if(launch_th_speed < 60){launch_th_speed += 5;}
+				if(launch.launch_th_speed < 60){launch.launch_th_speed += 5;}
 			}
 			break;
 		default:
@@ -159,15 +159,15 @@ void loop(){
 	if(check_display()){
 		FTImpl.DLStart();
 
-		if(sw3){
+		if(io.sw3){
 			diag_display(diag_shift, diag_fuel_st, diag_rst);
-		} else if(sw1){
+		} else if(io.sw1){
 			launch_display();
 		} else {
 			main_display();
 		}
 
-		if((warning != -1) && !(dismissed & (warning + 1)) && !sw3){
+		if((warning != -1) && !(dismissed & (warning + 1)) && !io.sw3){
 			error_overlay();
 		}
 
@@ -179,34 +179,34 @@ void loop(){
 	}
 }
 
-void get_inputs(uint8_t *status1, uint8_t *status2){
+void get_inputs(uint8_t &status1, uint8_t &status2){
 	c_time = millis();
 
 	uint32_t portb = GPIOB->regs->IDR;
 	uint32_t porta = GPIOA->regs->IDR;
 
-	mid		=	!(portb & 0b10);
-	sw1		=	!(portb & 0b100000000);
-	sw2		=	!(portb & 0b1000000);
-	sw3		=	!(portb & 0b10000);
-	sw4		=	!(portb & 0b1000);
-	pl		=	!(porta & 0b100000000);
-	pr		=	!(porta & 0b1000000000);
-	tl		=	!(porta & 0b10000000000);
-	tr		=	!(porta & 0b1000000000000000);
+	io.mid		=	!(portb & 0b10);
+	io.sw1		=	!(portb & 0b100000000);
+	io.sw2		=	!(portb & 0b1000000);
+	io.sw3		=	!(portb & 0b10000);
+	io.sw4		=	!(portb & 0b1000);
+	io.pl		=	!(porta & 0b100000000);
+	io.pr		=	!(porta & 0b1000000000);
+	io.tl		=	!(porta & 0b10000000000);
+	io.tr		=	!(porta & 0b1000000000000000);
 
 
-	if(tl && tr){
+	if(io.tl && io.tr){
 		tr_deb = (!tr_deb) ? c_time : tr_deb;
 		if(c_time - tr_deb > 500){
 			
 			tr_deb = 0;
-			remote_start = true;
+			io.remote_start = true;
 		}
-		tr = tl = false;
+		io.tr = io.tl = false;
 		
 	} else {
-		remote_start = 0;
+		io.remote_start = 0;
 		tr_deb = 0;
 	}
 
@@ -215,34 +215,34 @@ void get_inputs(uint8_t *status1, uint8_t *status2){
 
 
 	// dismiss the current warning if either tl or tr is pressed, intercept their respective functions
-	if((tl || tr) && warning != -1){
+	if((io.tl || io.tr) && warning != -1){
 		if(!(dismissed & (warning+1))){
 			dismissed = dismissed | (warning+1);
 			warning = -1;
-			tl = 0;
-			tr = 0;
+			io.tl = 0;
+			io.tr = 0;
 		}
 	}
 
 	// un-dismiss the warnings if the middle button is pressed
-	dismissed = mid ? 0 : dismissed;
+	dismissed = io.mid ? 0 : dismissed;
 
 	// create the status bitfields
-	*status1 = 0;
-	*status2 = 0;
+	status1 = 0;
+	status2 = 0;
 
-	*status1 = *status1
-					| sw1 
-					| sw2 << 1 
-					| sw3 << 2 
-					| sw4 << 3 
-					| tr << 4 
-					| tl << 5 
-					| pr << 6 
-					| pl << 7;
+	status1 = status1
+					| io.sw1 
+					| io.sw2 << 1 
+					| io.sw3 << 2 
+					| io.sw4 << 3 
+					| io.tr << 4 
+					| io.tl << 5 
+					| io.pr << 6 
+					| io.pl << 7;
 
-	*status2 = *status2
-					| mid
+	status2 = status2
+					| io.mid
 					| diag_fuel_st << 1
-					| remote_start << 2;
+					| io.remote_start << 2;
 }
