@@ -66,7 +66,7 @@ void loop(){
 		// code for sending to Motec over CAN
 		uint8_t status1, status2;
 		get_inputs(status1, status2);
-		uint8_t buff[4] = {status1, status2, launch.launch_th_speed, launch.launch_rpm};
+		uint8_t buff[4] = {status1, status2, veh.launch_cnf.th_speed, veh.launch_cnf.rpm};
 		CAN.sendMsgBuf(transmit_ID, 0, 4, buff);
 		c_time = millis();
 
@@ -121,7 +121,7 @@ void loop(){
 			}
 			else if(c_time - launch_rpm_minus_deb > 50){
 				launch_rpm_minus_deb = 0;
-				if(launch.launch_rpm > 20){launch.launch_rpm -= 2;}
+				if(veh.launch_cnf.rpm > 20){veh.launch_cnf.rpm -= 2;}
 			}
 			break;
 		case 5:
@@ -130,7 +130,7 @@ void loop(){
 			}
 			else if(c_time - launch_rpm_plus_deb > 50){
 				launch_rpm_plus_deb = 0;
-				if(launch.launch_rpm < 80){launch.launch_rpm += 2;}
+				if(veh.launch_cnf.rpm < 80){veh.launch_cnf.rpm += 2;}
 			}
 			break;
 		case 6:
@@ -139,7 +139,7 @@ void loop(){
 			}
 			else if(c_time - launch_thresh_minus_deb > 50){
 				launch_thresh_minus_deb = 0;
-				if(launch.launch_th_speed > 15){launch.launch_th_speed -= 5;}
+				if(veh.launch_cnf.th_speed > 15){veh.launch_cnf.th_speed -= 5;}
 			}
 			break;
 		case 7:
@@ -148,7 +148,7 @@ void loop(){
 			}
 			else if(c_time - launch_thresh_plus_deb > 50){
 				launch_thresh_plus_deb = 0;
-				if(launch.launch_th_speed < 60){launch.launch_th_speed += 5;}
+				if(veh.launch_cnf.th_speed < 60){veh.launch_cnf.th_speed += 5;}
 			}
 			break;
 		default:
@@ -159,15 +159,15 @@ void loop(){
 	if(check_display()){
 		FTImpl.DLStart();
 
-		if(io.sw3){
+		if(veh.io.sw3){
 			diag_display(diag_shift, diag_fuel_st, diag_rst);
-		} else if(io.sw1){
+		} else if(veh.io.sw1){
 			launch_display();
 		} else {
 			main_display();
 		}
 
-		if((warning != -1) && !(dismissed & (warning + 1)) && !io.sw3){
+		if((warning != -1) && !(dismissed & (warning + 1)) && !veh.io.sw3){
 			error_overlay();
 		}
 
@@ -185,28 +185,28 @@ void get_inputs(uint8_t &status1, uint8_t &status2){
 	uint32_t portb = GPIOB->regs->IDR;
 	uint32_t porta = GPIOA->regs->IDR;
 
-	io.mid		=	!(portb & 0b10);
-	io.sw1		=	!(portb & 0b100000000);
-	io.sw2		=	!(portb & 0b1000000);
-	io.sw3		=	!(portb & 0b10000);
-	io.sw4		=	!(portb & 0b1000);
-	io.pl		=	!(porta & 0b100000000);
-	io.pr		=	!(porta & 0b1000000000);
-	io.tl		=	!(porta & 0b10000000000);
-	io.tr		=	!(porta & 0b1000000000000000);
+	veh.io.mid		=	!(portb & 0b10);
+	veh.io.sw1		=	!(portb & 0b100000000);
+	veh.io.sw2		=	!(portb & 0b1000000);
+	veh.io.sw3		=	!(portb & 0b10000);
+	veh.io.sw4		=	!(portb & 0b1000);
+	veh.io.pl		=	!(porta & 0b100000000);
+	veh.io.pr		=	!(porta & 0b1000000000);
+	veh.io.tl		=	!(porta & 0b10000000000);
+	veh.io.tr		=	!(porta & 0b1000000000000000);
 
 
-	if(io.tl && io.tr){
+	if(veh.io.tl && veh.io.tr){
 		tr_deb = (!tr_deb) ? c_time : tr_deb;
 		if(c_time - tr_deb > 500){
 			
 			tr_deb = 0;
-			io.remote_start = true;
+			veh.io.remote_start = true;
 		}
-		io.tr = io.tl = false;
+		veh.io.tr = veh.io.tl = false;
 		
 	} else {
-		io.remote_start = 0;
+		veh.io.remote_start = 0;
 		tr_deb = 0;
 	}
 
@@ -215,34 +215,34 @@ void get_inputs(uint8_t &status1, uint8_t &status2){
 
 
 	// dismiss the current warning if either tl or tr is pressed, intercept their respective functions
-	if((io.tl || io.tr) && warning != -1){
+	if((veh.io.tl || veh.io.tr) && warning != -1){
 		if(!(dismissed & (warning+1))){
 			dismissed = dismissed | (warning+1);
 			warning = -1;
-			io.tl = 0;
-			io.tr = 0;
+			veh.io.tl = 0;
+			veh.io.tr = 0;
 		}
 	}
 
 	// un-dismiss the warnings if the middle button is pressed
-	dismissed = io.mid ? 0 : dismissed;
+	dismissed = veh.io.mid ? 0 : dismissed;
 
 	// create the status bitfields
 	status1 = 0;
 	status2 = 0;
 
 	status1 = status1
-					| io.sw1 
-					| io.sw2 << 1 
-					| io.sw3 << 2 
-					| io.sw4 << 3 
-					| io.tr << 4 
-					| io.tl << 5 
-					| io.pr << 6 
-					| io.pl << 7;
+					| veh.io.sw1 
+					| veh.io.sw2 << 1 
+					| veh.io.sw3 << 2 
+					| veh.io.sw4 << 3 
+					| veh.io.tr << 4 
+					| veh.io.tl << 5 
+					| veh.io.pr << 6 
+					| veh.io.pl << 7;
 
 	status2 = status2
-					| io.mid
+					| veh.io.mid
 					| diag_fuel_st << 1
-					| io.remote_start << 2;
+					| veh.io.remote_start << 2;
 }

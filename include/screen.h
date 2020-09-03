@@ -54,7 +54,6 @@ bool check_display();
  */
 
 extern ShiftLights shift_lights;
-// extern s_veh_data veh_data_S;
 
 // ---------------------------------- Helper Functions ----------------------------------
 
@@ -311,23 +310,23 @@ void common_display()
 	
 	uint32_t col;
 
-	col = (io.tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(20, 35, 1, 0);
 
-	col = (io.tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(445, 35, 1, 0);
 
-	col = (io.tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(150, 255, 1, 0);
 
-	col = (io.tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(210, 255, 1, 0);
 
-	col = (io.tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(270, 255, 1, 0);
 	FTImpl.End();
@@ -352,11 +351,11 @@ void common_display()
 	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(330, 237, 21, FT_OPT_CENTER, "WC");
 
-	const char *d_w = !io.sw4 ? "D" : "W";
+	const char *d_w = !veh.io.sw4 ? "D" : "W";
 	FTImpl.Cmd_Text(330, 255, 28, FT_OPT_CENTER, d_w);
 
 
-	if(io.remote_start){
+	if(veh.io.remote_start){
 		FTImpl.ColorRGB(255, 0, 0);
 		FTImpl.Cmd_Text(240, 208, 27, FT_OPT_CENTER, "IGN");
 	}
@@ -381,14 +380,14 @@ void launch_display(){
 	FTImpl.Cmd_Text(400, 15, 28, FT_OPT_CENTER, "Current");
 
 	FTImpl.Cmd_Text(348, 35, 23, FT_OPT_CENTER, "RPM:");
-	FTImpl.Cmd_Number(400, 55, 30, FT_OPT_CENTER, launch.launch_rpm*100);
+	FTImpl.Cmd_Number(400, 55, 30, FT_OPT_CENTER, veh.launch_cnf.rpm*100);
 	FTImpl.Tag(4);
 	FTImpl.Cmd_Button(340, 70, 48, 48, 27, 0, "-");
 	FTImpl.Tag(5);
 	FTImpl.Cmd_Button(410, 70, 48, 48, 27, 0, "+");
 
 	FTImpl.Cmd_Text(355, 133, 23, FT_OPT_CENTER, "Thresh:");
-	FTImpl.Cmd_Number(400, 155, 30, FT_OPT_CENTER, launch.launch_th_speed);
+	FTImpl.Cmd_Number(400, 155, 30, FT_OPT_CENTER, veh.launch_cnf.th_speed);
 	FTImpl.Tag(6);
 	FTImpl.Cmd_Button(335, 170, 48, 48, 27, 0, "-");
 	FTImpl.Tag(7);

@@ -45,8 +45,9 @@ bool diag_fuel_st = 0;
 void get_inputs(uint8_t&, uint8_t&);
 
 // External Variables
-extern veh_data_S veh;
-extern io_state_S io;
-extern launch_cnf_S launch;
-
+//TODO move all CAN stuff out of main and then delete this variable
+extern MCP_CAN CAN;
+extern FT800IMPL_SPI FTIMPL;
+extern sTagXY sTagxy;
+extern uint32_t touch_matrix [6];
 #endif // MAIN_H
