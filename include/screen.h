@@ -1,16 +1,23 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-// Includes
+// Interfaces Used 
 #include <inttypes.h>
 #include <FT_NHD_43RTP_SHIELD.h>
 #include "shiftlights.h"
 
-// Local Definitions
+/*
+ * MACROS
+ */
+
 #define MCP_CS PB12
 #define MCP_INT PB11
 #define SCR_CS_PIN PA0
 #define RAM_FONTS_MICROSS 0
+
+/*
+ * PRIVATE DATA
+ */
 static PROGMEM prog_uchar FONTS_MICROSS[] = {
 	#include "FONTS_MICROSS.h"
 };
@@ -24,7 +31,15 @@ sTagXY sTagxy;
 // touchscreen calibration for orange wheel
 uint32_t touch_matrix [6] = {32439, 4294966806, 4294236873, 4294966575, 4294947195, 18508876};
 
-// Local Function Definitions
+// warning defs
+int warning = -1;
+char warnings [8][20] = {"No Conn.", "Low Oil Press.", "Low Fuel Press.", "Low Batt. Volt.", "High Cool. Temp.", "High Oil Temp",
+						"Low AFR", "High AFR"};
+int last_warn = -1;
+uint8_t dismissed = 0;
+
+
+// Function Prototypes 
 void calibrate_display();
 void common_display();
 void error_overlay();
@@ -34,17 +49,11 @@ void diag_display(bool, bool, bool);
 bool boot_display();
 bool check_display();
 
-
-
-// warning defs
-int warning = -1;
-char warnings [8][20] = {"No Conn.", "Low Oil Press.", "Low Fuel Press.", "Low Batt. Volt.", "High Cool. Temp.", "High Oil Temp",
-						"Low AFR", "High AFR"};
-int last_warn = -1;
-uint8_t dismissed = 0;
+/*
+ * EXTERNAL VARIABLES
+ */
 
 extern ShiftLights shift_lights;
-
 
 // ---------------------------------- Helper Functions ----------------------------------
 
@@ -181,8 +190,8 @@ void main_display(){
 	int y = 0;
 
 	// Top Left Pill (Battery Voltage)
-	col = (voltage > 12) ? 0x00FF00 : 0x0000FF;
-	col = (voltage <= 9) ? 0xFF0000 : col;
+	col = (veh.voltage > 12) ? 0x00FF00 : 0x0000FF;
+	col = (veh.voltage <= 9) ? 0xFF0000 : col;
 
 	x = 45;
 	y = 105;
@@ -191,16 +200,16 @@ void main_display(){
 	FTImpl.ColorRGB(col);
 	make_pill(x, y);
 	FTImpl.ColorRGB(0, 0, 0);
-	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_CENTER, v_int);
+	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_CENTER, veh.v_int);
 	FTImpl.Cmd_Text(x, y, 28, FT_OPT_CENTER, ".");
-	FTImpl.Cmd_Number(x+7, y, 28, FT_OPT_CENTER, v_fl);
+	FTImpl.Cmd_Number(x+7, y, 28, FT_OPT_CENTER, veh.v_fl);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "V");
 
 
 	// Top Right Pill (Coolant Temp)
-	col = (c_temp > 100) ? 0xFF0000 : 0x00FF00;
-	col = (c_temp <= 80) ? 0x0000FF : col;
-	col = (c_temp <= 40) ? 0xFF0000 : col;
+	col = (veh.c_temp > 100) ? 0xFF0000 : 0x00FF00;
+	col = (veh.c_temp <= 80) ? 0x0000FF : col;
+	col = (veh.c_temp <= 40) ? 0xFF0000 : col;
 
 	x = 435;
 	y = 105;
@@ -210,7 +219,7 @@ void main_display(){
 	FTImpl.ColorRGB(col);
 	make_pill(x, y);
 	FTImpl.ColorRGB(0, 0, 0);
-	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, c_temp);
+	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, veh.c_temp);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "C");
 	FTImpl.Cmd_Text(x+17, y-10, 26, FT_OPT_CENTER, "o");
 
@@ -218,22 +227,22 @@ void main_display(){
 	// Middle Left Pill (Oil Pressure)
 	x = 45;
 	y = 170;
-	col = (o_press > 380) ? 0x00FF00 : 0x0000FF;
-	col = (o_press <= 100) ? 0xFF0000 : col;
+	col = (veh.o_press > 380) ? 0x00FF00 : 0x0000FF;
+	col = (veh.o_press <= 100) ? 0xFF0000 : col;
 
 	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(x, y-25, 26, FT_OPT_CENTER, "O_Press");
 	FTImpl.ColorRGB(col);
 	make_pill(x, y);
 	FTImpl.ColorRGB(0, 0, 0);
-	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, o_press);
+	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, veh.o_press);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "C");
 	FTImpl.Cmd_Text(x+17, y-8, 26, FT_OPT_CENTER, "o");
 
 
 	// Middle Right Pill (Fuel Pressure)
-	col = (f_press > 380) ? 0x00FF00 : 0x0000FF;
-	col = (f_press <= 100) ? 0xFF0000 : col;
+	col = (veh.f_press > 380) ? 0x00FF00 : 0x0000FF;
+	col = (veh.f_press <= 100) ? 0xFF0000 : col;
 
 	x = 435;
 	y = 170;
@@ -242,14 +251,14 @@ void main_display(){
 	FTImpl.ColorRGB(col);
 	make_pill(x, y);
 	FTImpl.ColorRGB(0, 0, 0);
-	FTImpl.Cmd_Number(x-21, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, f_press);
+	FTImpl.Cmd_Number(x-21, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, veh.f_press);
 	FTImpl.Cmd_Text(x+18, y, 28, FT_OPT_CENTER, "kPa");
 
 
 	// Bottom Left Pill (Oil Temp)
-	col = (o_temp > 115) ? 0xFF0000 : 0x00FF00;
-	col = (o_temp <= 80) ? 0x0000FF : col;
-	col = (o_temp <= 40) ? 0xFF0000 : col;
+	col = (veh.o_temp > 115) ? 0xFF0000 : 0x00FF00;
+	col = (veh.o_temp <= 80) ? 0x0000FF : col;
+	col = (veh.o_temp <= 40) ? 0xFF0000 : col;
 
 	x = 45;
 	y = 235;
@@ -259,7 +268,7 @@ void main_display(){
 	FTImpl.ColorRGB(col);
 	make_pill(x, y);
 	FTImpl.ColorRGB(0, 0, 0);
-	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, o_temp);
+	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, veh.o_temp);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "C");
 	FTImpl.Cmd_Text(x+17, y-8, 26, FT_OPT_CENTER, "o");
 
@@ -267,25 +276,25 @@ void main_display(){
 	// Bottom Right Pill (Fuel Temp)
 	x = 435;
 	y = 235;
-	col = (f_temp > 380) ? 0x00FF00 : 0x0000FF;
-	col = (f_temp <= 100) ? 0xFF0000 : col;
+	col = (veh.f_temp > 380) ? 0x00FF00 : 0x0000FF;
+	col = (veh.f_temp <= 100) ? 0xFF0000 : col;
 
 	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(x, y-25, 26, FT_OPT_CENTER, "F_Temp");
 	FTImpl.ColorRGB(col);
 	make_pill(x, y);
 	FTImpl.ColorRGB(0, 0, 0);
-	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, f_temp);
+	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_SIGNED | FT_OPT_CENTER, veh.f_temp);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "C");
 	FTImpl.Cmd_Text(x+17, y-8, 26, FT_OPT_CENTER, "o");
 
 	FTImpl.ColorRGB(255, 255, 255);
-	FTImpl.Cmd_Number(240, 45, 0, FT_OPT_CENTER, rpm);
+	FTImpl.Cmd_Number(240, 45, 0, FT_OPT_CENTER, veh.rpm);
 
 	const char * gears [6]= {"N", "1", "2", "3", "4", "5"};
 
-	if(gear > -1 && gear < 7){
-		FTImpl.Cmd_Text(240, 156, 0, FT_OPT_CENTER, gears[gear]);
+	if(veh.gear > -1 && veh.gear < 7){
+		FTImpl.Cmd_Text(240, 156, 0, FT_OPT_CENTER, gears[veh.gear]);
 	} else {
 		FTImpl.Cmd_Text(240, 156, 0, FT_OPT_CENTER, "?");
 	}
@@ -301,23 +310,23 @@ void common_display()
 	
 	uint32_t col;
 
-	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(20, 35, 1, 0);
 
-	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(445, 35, 1, 0);
 
-	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(150, 255, 1, 0);
 
-	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(210, 255, 1, 0);
 
-	col = (tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(270, 255, 1, 0);
 	FTImpl.End();
@@ -342,11 +351,11 @@ void common_display()
 	FTImpl.ColorRGB(0xFFFFFF);
 	FTImpl.Cmd_Text(330, 237, 21, FT_OPT_CENTER, "WC");
 
-	const char *d_w = !sw4 ? "D" : "W";
+	const char *d_w = !veh.io.sw4 ? "D" : "W";
 	FTImpl.Cmd_Text(330, 255, 28, FT_OPT_CENTER, d_w);
 
 
-	if(remote_start){
+	if(veh.io.remote_start){
 		FTImpl.ColorRGB(255, 0, 0);
 		FTImpl.Cmd_Text(240, 208, 27, FT_OPT_CENTER, "IGN");
 	}
@@ -371,14 +380,14 @@ void launch_display(){
 	FTImpl.Cmd_Text(400, 15, 28, FT_OPT_CENTER, "Current");
 
 	FTImpl.Cmd_Text(348, 35, 23, FT_OPT_CENTER, "RPM:");
-	FTImpl.Cmd_Number(400, 55, 30, FT_OPT_CENTER, launch_rpm*100);
+	FTImpl.Cmd_Number(400, 55, 30, FT_OPT_CENTER, veh.launch_cnf.rpm*100);
 	FTImpl.Tag(4);
 	FTImpl.Cmd_Button(340, 70, 48, 48, 27, 0, "-");
 	FTImpl.Tag(5);
 	FTImpl.Cmd_Button(410, 70, 48, 48, 27, 0, "+");
 
 	FTImpl.Cmd_Text(355, 133, 23, FT_OPT_CENTER, "Thresh:");
-	FTImpl.Cmd_Number(400, 155, 30, FT_OPT_CENTER, launch_th_speed);
+	FTImpl.Cmd_Number(400, 155, 30, FT_OPT_CENTER, veh.launch_cnf.th_speed);
 	FTImpl.Tag(6);
 	FTImpl.Cmd_Button(335, 170, 48, 48, 27, 0, "-");
 	FTImpl.Tag(7);
