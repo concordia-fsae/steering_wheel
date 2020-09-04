@@ -200,9 +200,14 @@ void main_display(){
 	FTImpl.ColorRGB(col);
 	make_pill(x, y);
 	FTImpl.ColorRGB(0, 0, 0);
-	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_CENTER, veh.v_int);
+
+	// this is still really dumb, but at least it's not expensive
+	int v_int = veh.voltage;
+	float v_fl = (float)((veh.voltage - v_int) * 10);
+
+	FTImpl.Cmd_Number(x-15, y, 28, FT_OPT_CENTER, v_int);
 	FTImpl.Cmd_Text(x, y, 28, FT_OPT_CENTER, ".");
-	FTImpl.Cmd_Number(x+7, y, 28, FT_OPT_CENTER, veh.v_fl);
+	FTImpl.Cmd_Number(x+7, y, 28, FT_OPT_CENTER, v_fl);
 	FTImpl.Cmd_Text(x+27, y, 28, FT_OPT_CENTER, "V");
 
 

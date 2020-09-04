@@ -105,6 +105,6 @@ extern uint32_t last_can_update;
 
 
 // Public Functions
-void can_receive();
+extern void can_receive();
 
 #endif // CANBUS_H
