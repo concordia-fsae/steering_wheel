@@ -2,17 +2,21 @@
  * CANBus.h
  */
 
+#ifndef CANBUS_H
+#define CANBUS_H
+
 // Interfaces Used 
 #include "mcp_can_stm.h"
 #include <inttypes.h>
 #include "VehicleData.h"
 
-#ifndef CANBUS_H
-#define CANBUS_H
 
 /*
  * MACROS
  */
+
+#define MCP_CS PB12
+#define MCP_INT PB11
 
 #define can_timeout		5000		// time without CAN message before error occurs (ms)
 #define transmit_ID		0xA0		// CAN Bus transmit ID (messages will be sent with this ID)
