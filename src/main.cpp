@@ -81,9 +81,6 @@ void loop(){
 			warning.current = 0;
 		}
 
-		veh.v_int = veh.voltage;
-		veh.v_fl = (float)((veh.voltage - veh.v_int)*10);
-
 		shift_lights.Update(veh.gear, veh.rpm);
 		c_time = millis();
 	}

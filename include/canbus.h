@@ -43,6 +43,6 @@ extern uint32_t last_can_update;
 extern veh_data_S veh;
 
 // Public Functions
-void can_receive();
+extern void can_receive();
 
 #endif // CANBUS_H
