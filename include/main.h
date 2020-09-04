@@ -14,12 +14,14 @@
 // pin that is connected to rst
 #define RST PB0
 
+
 // TODO: replace all of this with a timer class
 uint32_t c_time = 0;
 uint32_t l_time_50 = 0;		    // last time a 50Hz event occured
 uint32_t l_time_10 = 0;		    // last time a 10Hz event occured
 uint32_t l_time_5 = 0;			// last time a 5Hz event occured
 uint32_t l_time_1 = 0;			// last time a 1Hz event occured
+
 
 // constants for each refresh rate
 uint16_t fifty_hz = 20;
@@ -48,7 +50,12 @@ bool diag_rst = 0;
 bool diag_fuel_st = 0;
 
 // Local Function Prototypes
-void get_inputs(uint8_t*, uint8_t*);
+void get_inputs(uint8_t&, uint8_t&);
 
-
+// External Variables
+//TODO move all CAN stuff out of main and then delete this variable
+extern MCP_CAN CAN;
+extern FT800IMPL_SPI FTIMPL;
+extern sTagXY sTagxy;
+extern uint32_t touch_matrix [6];
 #endif // MAIN_H
