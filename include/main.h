@@ -11,6 +11,7 @@
 #include "canbus.h"
 #include <FT_NHD_43RTP_SHIELD.h>
 #include "screen.h"
+#include "Debouncer.h"
 
 
 
@@ -19,7 +20,7 @@
 
 
 // TODO: replace all of this with a timer class
-uint32_t c_time = 0;
+extern uint32_t c_time;
 uint32_t l_time_50 = 0;		    // last time a 50Hz event occured
 uint32_t l_time_10 = 0;		    // last time a 10Hz event occured
 uint32_t l_time_5 = 0;			// last time a 5Hz event occured

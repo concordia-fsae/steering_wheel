@@ -3,6 +3,9 @@
 ShiftLights shift_lights = ShiftLights(kSLPin, kSLCount, kSLBrightness);
 SPIClass SPI_2(2);
 
+// define global time tracker
+uint32_t c_time = millis();
+
 void setup(){
 	Serial.begin(115200);
 	
@@ -19,7 +22,7 @@ void setup(){
 		delay(100);
 	}
 	Serial.println("MCP2515 Connection Successfull!");
-*/
+// */
 	// define all input pins
 	uint8_t inputs [13] = {PB3, PB4, PB6, PB8, PA8, PA9, PA10, PA15, PB1, PA7, PA6, PA5, PA4};
 
