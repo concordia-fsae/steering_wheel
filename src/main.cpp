@@ -90,24 +90,26 @@ void loop(){
 
 	if(c_time - l_time_10 > ten_hz){
 		diag_shift = 0;
-		FTImpl.GetTagXY(sTagxy);
-		int tag = sTagxy.tag;
+		uint16_t ts_btn = ts_btn_pressed();
 
 		int colors [2] = {0x0, 0x00FF00};
-		switch(tag){
+		switch(ts_btn){
+		case 0:
+			diag_fuel_deb.Reset();
+			launch_rpm_minus.Reset();
+			launch_rpm_plus.Reset();
+			launch_thresh_minus.Reset();
+			launch_thresh_plus.Reset();
+		// no 0th button
+			break;
 		case 1:
 		// case 1, shift light diagnostics
 			diag_shift = 1;
-
 			shift_lights.SetAllColor(colors[diag_shift]);
 			break;
 		case 2:
 		// case 2, turn on fuel pump
-			if(!diag_fuel_deb){
-				diag_fuel_deb = c_time;
-			}
-			else if(c_time - diag_fuel_deb > 250){
-				diag_fuel_deb = 0;
+			if(diag_fuel_deb.Deb()){
 				diag_fuel_st = !diag_fuel_st;
 			}
 			break;
@@ -117,38 +119,22 @@ void loop(){
 			diag_rst = 1;
 			break;
 		case 4:
-			if(!launch_rpm_minus_deb){
-				launch_rpm_minus_deb = c_time;
-			}
-			else if(c_time - launch_rpm_minus_deb > 50){
-				launch_rpm_minus_deb = 0;
+			if(launch_rpm_minus.Deb()){
 				if(veh.launch_cnf.rpm > 20){veh.launch_cnf.rpm -= 2;}
 			}
 			break;
 		case 5:
-			if(!launch_rpm_plus_deb){
-				launch_rpm_plus_deb = c_time;
-			}
-			else if(c_time - launch_rpm_plus_deb > 50){
-				launch_rpm_plus_deb = 0;
+			if(launch_rpm_plus.Deb()){
 				if(veh.launch_cnf.rpm < 80){veh.launch_cnf.rpm += 2;}
 			}
 			break;
 		case 6:
-			if(!launch_thresh_minus_deb){
-				launch_thresh_minus_deb = c_time;
-			}
-			else if(c_time - launch_thresh_minus_deb > 50){
-				launch_thresh_minus_deb = 0;
+			if(launch_thresh_minus.Deb()){
 				if(veh.launch_cnf.th_speed > 15){veh.launch_cnf.th_speed -= 5;}
 			}
 			break;
 		case 7:
-			if(!launch_thresh_plus_deb){
-				launch_thresh_plus_deb = c_time;
-			}
-			else if(c_time - launch_thresh_plus_deb > 50){
-				launch_thresh_plus_deb = 0;
+			if(launch_thresh_plus.Deb()){
 				if(veh.launch_cnf.th_speed < 60){veh.launch_cnf.th_speed += 5;}
 			}
 			break;
@@ -198,22 +184,15 @@ void get_inputs(uint8_t &status1, uint8_t &status2){
 
 
 	if(veh.io.tl && veh.io.tr){
-		tr_deb = (!tr_deb) ? c_time : tr_deb;
-		if(c_time - tr_deb > 500){
-			
-			tr_deb = 0;
-			veh.io.remote_start = true;
-		}
+		// set the remote start bit to true if both the top buttons have
+		// been held for more than 500 ms, otherwise set it to false
+		// reset when one of the buttons is released
+		veh.io.remote_start = remote_start.Deb();
 		veh.io.tr = veh.io.tl = false;
-		
 	} else {
-		veh.io.remote_start = 0;
-		tr_deb = 0;
+		veh.io.remote_start = false;
+		remote_start.Reset();
 	}
-
-	// replaced by block above. I can't believe I left this in production code
-	// tr_deb = (c_time - tr_deb > 500) ? (tr = !tr) && 0 : tr_deb;
-
 
 	// dismiss the current warning if either tl or tr is pressed, intercept their respective functions
 	if((veh.io.tl || veh.io.tr) && warning.current != -1){

@@ -35,14 +35,14 @@ uint16_t one_hz = 1000;
 // end todo
 
 
-// TODO: replace all of this with a debounce class
 // debounce vars
-uint32_t diag_fuel_deb = 0;
-uint32_t tr_deb = 0;		// debounce var for top right btn
-uint32_t launch_rpm_plus_deb = 0;
-uint32_t launch_rpm_minus_deb = 0;
-uint32_t launch_thresh_plus_deb = 0;
-uint32_t launch_thresh_minus_deb = 0;
+Debouncer remote_start = Debouncer(500, 0);
+Debouncer diag_fuel_deb = Debouncer(200, 500);
+Debouncer launch_rpm_plus = Debouncer();
+Debouncer launch_rpm_minus = Debouncer();
+Debouncer launch_thresh_minus = Debouncer();
+Debouncer launch_thresh_plus = Debouncer();
+
 // end todo
 
 

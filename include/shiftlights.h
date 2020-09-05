@@ -18,7 +18,7 @@ public:
 	void SetAllColor(uint32_t);
 	void Clear();
 	void LedStartup();
-	void Update(uint8_t, uint16_t);
+	void Update(int8_t, uint16_t);
 
 private:
 	uint8_t pin_;

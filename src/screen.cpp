@@ -20,7 +20,7 @@ bool boot_display(){
 	FTImpl.Init(FT_DISPLAY_RESOLUTION, 0);		//configure the display to the WQVGA
 	chipid = FTImpl.Read32(FT_ROM_CHIPID);
 	/* Identify the chip */
-	int counter = 0;
+	uint8_t counter = 0;
 	while(FT800_CHIPID != chipid){
 		shift_lights.SetAllColor(0xFF0000);
 //		Serial.print("Error in chip id read ");
@@ -82,6 +82,16 @@ bool check_display(){
 	if(FT800_CHIPID != chipid) return 0;
 
 	return 1;
+}
+
+
+/*
+ * Checks to see if a touchscreen button has been pressed and returns the index
+ * of the button if it has
+ */
+uint16_t ts_btn_pressed(){
+	FTImpl.GetTagXY(sTagxy);
+	return sTagxy.tag;
 }
 
 
