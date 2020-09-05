@@ -269,19 +269,19 @@ void common_display()
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(20, 35, 1, 0);
 
-	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.tr) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(445, 35, 1, 0);
 
-	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.sw1) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(150, 255, 1, 0);
 
-	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.sw2) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(210, 255, 1, 0);
 
-	col = (veh.io.tl) ? 0x00FF00 : 0xFFFFFF;
+	col = (veh.io.sw3) ? 0x00FF00 : 0xFFFFFF;
 	FTImpl.ColorRGB(col);
 	FTImpl.Vertex2ii(270, 255, 1, 0);
 	FTImpl.End();
