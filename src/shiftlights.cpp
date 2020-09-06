@@ -73,7 +73,7 @@ void ShiftLights::LedStartup(){
 }
 
 // controls shift lights for each gear and RPM range
-void ShiftLights::Update(uint8_t gear, uint16_t rpm){
+void ShiftLights::Update(int8_t gear, uint16_t rpm){
 	float seg {0};				// segment size (i.e. how many RPM does each shift light represent?)
 	int num {0};				// number of lights that should be on
 	int segs [2] {5, 9};		// how to divide up the shift lights (group of 5, group of 5, group of 6)

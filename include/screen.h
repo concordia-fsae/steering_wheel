@@ -20,12 +20,11 @@
 static PROGMEM prog_uchar FONTS_MICROSS[] = {
 	#include "FONTS_MICROSS.h"
 };
-
-
 // touchscreen calibration for orange wheel
 extern uint32_t touch_matrix [];
 
 
+// TODO: probably move this to VehicleData.h
 // warning defs
 typedef struct s_warning {
 	int16_t current = -1;
@@ -38,21 +37,28 @@ typedef struct s_warning {
 
 
 
-// Function Prototypes 
-// TODO: Split into public and private
-extern void calibrate_display();
-extern void common_display();
+/*
+ * PUBLIC FUNCTIONS
+ */
 extern void error_overlay();
 extern void main_display();
 extern void launch_display();
 extern void diag_display(bool, bool, bool);
 extern bool boot_display();
 extern bool check_display();
+extern uint16_t ts_btn_pressed();
+
 
 /*
- * PUBLIC VARIABLES
+ * PRIVATE FUNCTIONS
  */
+extern void calibrate_display();
+extern void common_display();
 
+
+/*
+ * PUBLIC DATA 
+ */
 extern ShiftLights shift_lights;		// bring in shiftligts object so we can control them
 extern FT800IMPL_SPI FTImpl;			// define screen obj
 extern sTagXY sTagxy;					// define touchscreen obj

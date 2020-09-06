@@ -11,6 +11,7 @@
 #include "canbus.h"
 #include <FT_NHD_43RTP_SHIELD.h>
 #include "screen.h"
+#include "Debouncer.h"
 
 
 
@@ -19,7 +20,7 @@
 
 
 // TODO: replace all of this with a timer class
-uint32_t c_time = 0;
+extern uint32_t c_time;
 uint32_t l_time_50 = 0;		    // last time a 50Hz event occured
 uint32_t l_time_10 = 0;		    // last time a 10Hz event occured
 uint32_t l_time_5 = 0;			// last time a 5Hz event occured
@@ -34,14 +35,14 @@ uint16_t one_hz = 1000;
 // end todo
 
 
-// TODO: replace all of this with a debounce class
 // debounce vars
-uint32_t diag_fuel_deb = 0;
-uint32_t tr_deb = 0;		// debounce var for top right btn
-uint32_t launch_rpm_plus_deb = 0;
-uint32_t launch_rpm_minus_deb = 0;
-uint32_t launch_thresh_plus_deb = 0;
-uint32_t launch_thresh_minus_deb = 0;
+Debouncer remote_start = Debouncer(500, 0);
+Debouncer diag_fuel_deb = Debouncer(200, 500);
+Debouncer launch_rpm_plus = Debouncer();
+Debouncer launch_rpm_minus = Debouncer();
+Debouncer launch_thresh_minus = Debouncer();
+Debouncer launch_thresh_plus = Debouncer();
+
 // end todo
 
 
