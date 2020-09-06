@@ -4,9 +4,6 @@
 /*
  * PUBLIC DATA
  */
-veh_data_S veh;
-// io_state_S io;
-// launch_cnf_S launch;
 
 // CAN bus def
 MCP_CAN CAN;

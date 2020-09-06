@@ -1,6 +1,7 @@
 #include "main.h"
 
 ShiftLights shift_lights = ShiftLights(kSLPin, kSLCount, kSLBrightness);
+SPIClass SPI_2(2);
 
 void setup(){
 	Serial.begin(115200);
@@ -46,7 +47,7 @@ void setup(){
 */
 
 	if(!(CAN_OK == CAN.begin(CAN_1000KBPS, MCP_CS))){
-		warning = 0;
+		warning.current = 0;
 	}
 
 	/*
@@ -74,10 +75,10 @@ void loop(){
 		if(CAN_MSGAVAIL == CAN.checkReceive()){
 			can_receive();
 			last_can_update = c_time;
-			warning = -1;
+			warning.current = -1;
 		}
 		else if((c_time - last_can_update > can_timeout)){
-			warning = 0;
+			warning.current = 0;
 		}
 
 		shift_lights.Update(veh.gear, veh.rpm);
@@ -164,7 +165,7 @@ void loop(){
 			main_display();
 		}
 
-		if((warning != -1) && !(dismissed & (warning + 1)) && !veh.io.sw3){
+		if((warning.current != -1) && !(warning.dismissed & (warning.current + 1)) && !veh.io.sw3){
 			error_overlay();
 		}
 
@@ -212,17 +213,17 @@ void get_inputs(uint8_t &status1, uint8_t &status2){
 
 
 	// dismiss the current warning if either tl or tr is pressed, intercept their respective functions
-	if((veh.io.tl || veh.io.tr) && warning != -1){
-		if(!(dismissed & (warning+1))){
-			dismissed = dismissed | (warning+1);
-			warning = -1;
+	if((veh.io.tl || veh.io.tr) && warning.current != -1){
+		if(!(warning.dismissed & (warning.current+1))){
+			warning.dismissed = warning.dismissed | (warning.current+1);
+			warning.current = -1;
 			veh.io.tl = 0;
 			veh.io.tr = 0;
 		}
 	}
 
 	// un-dismiss the warnings if the middle button is pressed
-	dismissed = veh.io.mid ? 0 : dismissed;
+	warning.dismissed = veh.io.mid ? 0 : warning.dismissed;
 
 	// create the status bitfields
 	status1 = 0;

@@ -539,7 +539,8 @@
 #define RESTORE_CONTEXT() ((35UL<<24))
 #define RETURN() ((36UL<<24))
 #define MACRO(m) ((37UL<<24)|(((m)&1UL)<<0))
-#define DISPLAY() ((0UL<<24))
+// commenting this out because we don't use it and it throws warnings
+// #define DISPLAY() ((0UL<<24))
 
 #endif /* _FT800_H_ */
 

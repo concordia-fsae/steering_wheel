@@ -67,9 +67,11 @@ typedef PROGMEM const unsigned long prog_uint32_t;
 #define FT_SD_CSPIN 			PA1
 
 
+extern SPIClass SPI_2;
+
 /* Hardware specific include files */
 #include "hardware/FT800/FT800.h"
-#include "libraries/FT_SD/FT_SD.h"
+// #include "libraries/FT_SD/FT_SD.h"
 //#include "libraries/FT_RTC/FT_RTC.h"
 #include "libraries/FT_GC/FT_Transport_SPI/FT_Transport_SPI.h"
 #include "libraries/FT_GC/FT_GC.h"

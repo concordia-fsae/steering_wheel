@@ -6,9 +6,12 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <inttypes.h>
+#include "VehicleData.h"
 #include "shiftlights.h"
 #include "canbus.h"
+#include <FT_NHD_43RTP_SHIELD.h>
 #include "screen.h"
+
 
 
 // pin that is connected to rst
@@ -55,7 +58,4 @@ void get_inputs(uint8_t&, uint8_t&);
 // External Variables
 //TODO move all CAN stuff out of main and then delete this variable
 extern MCP_CAN CAN;
-extern FT800IMPL_SPI FTIMPL;
-extern sTagXY sTagxy;
-extern uint32_t touch_matrix [6];
 #endif // MAIN_H
