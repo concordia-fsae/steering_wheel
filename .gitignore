@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,c++,vim,platformio
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,c++,vim,platformio
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,c++,vim,platformio,altium
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,c++,vim,platformio,altium
 
 ### C++ ###
 # Prerequisites
@@ -74,5 +74,24 @@ tags
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
+
+### Altium ###
+# Previews Folders
+**/__Previews/
+
+# History Folders
+**/History/*
+
+# Project Logs
+Project\ Logs*/
+
+# Project Outputs
+Project\ Outputs*/
+
+# Auto-conversion notices
+*.PcbDoc.htm
+
+# Access lock file for dbLib sources
+**/*.ldb
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,c++,vim,platformio
