@@ -4,7 +4,7 @@ ShiftLights shift_lights = ShiftLights(kSLPin, kSLCount, kSLBrightness);
 SPIClass SPI_2(2);
 
 // define global time tracker
-uint32_t c_time = millis();
+volatile uint32_t &c_time = systick_uptime_millis;
 
 void setup(){
 	Serial.begin(115200);
@@ -63,7 +63,6 @@ void setup(){
 
 void loop(){
 	digitalWrite(RST, !diag_rst);
-	c_time = millis();
 
 	if(c_time - l_time_50 >= fifty_hz){		// send/recv data from Motec at 50 Hz
 		l_time_50 = c_time;
@@ -72,7 +71,6 @@ void loop(){
 		get_inputs(status1, status2);
 		uint8_t buff[4] = {status1, status2, veh.launch_cnf.th_speed, veh.launch_cnf.rpm};
 		CAN.sendMsgBuf(transmit_ID, 0, 4, buff);
-		c_time = millis();
 
 		// check for CAN Comms error and process any waiting CAN messages
 		if(CAN_MSGAVAIL == CAN.checkReceive()){
@@ -85,7 +83,6 @@ void loop(){
 		}
 
 		shift_lights.Update(veh.gear, veh.rpm);
-		c_time = millis();
 	}
 
 	if(c_time - l_time_10 > ten_hz){
@@ -167,8 +164,6 @@ void loop(){
 }
 
 void get_inputs(uint8_t &status1, uint8_t &status2){
-	c_time = millis();
-
 	uint32_t portb = GPIOB->regs->IDR;
 	uint32_t porta = GPIOA->regs->IDR;
 

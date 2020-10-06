@@ -1,7 +1,7 @@
 #pragma once
 #include <inttypes.h>
 
-extern uint32_t c_time;
+extern volatile uint32_t &c_time;
 
 class Debouncer{
 public:
