@@ -1,26 +1,13 @@
 #pragma once
 
 #include <inttypes.h>
+#include "Launch.h"
 
 /*
  * TYPEDEFS
  */
 
-
-/*
- * data pertaining to tuning launch control from the steering wheel
- * TODO: store this in eeprom and fetch on boot, returning to default vals
- * if unset
- */
-typedef struct s_launch_cnf {
-	uint8_t rpm = 6000/100;		// default value for launch rpm
-	uint8_t th_speed = 30;		// default value for threshold speed
-} launch_cnf_S;
-
-/*
- * Data that pertains to Steering Wheel IO
- */
-
+// Data that pertains to Steering Wheel IO
 typedef struct s_io_state {
 	/* the four switches on the bottom of the steering wheel
 	 * not counting the one in the middle
@@ -49,6 +36,7 @@ typedef struct s_io_state {
 	bool remote_start;
 } io_state_S;
 
+// Vehicle data struct
 typedef struct s_veh_data {
 	int8_t gear;
 	bool launch;

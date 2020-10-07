@@ -7,14 +7,15 @@ SPIClass SPI_2(2);
 uint32_t c_time = millis();
 
 void setup(){
+#if DEBUG
 	Serial.begin(115200);
-	
-/* DEBUG CODE
+#if WAIT_FOR_SERIAL
 	// wait for computer to connect to serial before continuing
 	while(Serial.read() <= 0);
+#endif
 	Serial.println("Serial connected.");
-
-// DEBUG CAN CONNECTION
+#if DEBUG_CAN
+	// Debug connection to MCP2515 
 	// verify connection to can bus module
 	while(!(CAN_OK == CAN.begin(CAN_1000KBPS, PB12))){
 		Serial.print("MCP2515 Connection Failed, retrying ");
@@ -22,6 +23,8 @@ void setup(){
 		delay(100);
 	}
 	Serial.println("MCP2515 Connection Successfull!");
+#endif
+#endif
 // */
 	// define all input pins
 	uint8_t inputs [13] = {PB3, PB4, PB6, PB8, PA8, PA9, PA10, PA15, PB1, PA7, PA6, PA5, PA4};
@@ -40,14 +43,6 @@ void setup(){
 
 	// run the shift light startup sequence
 	shift_lights.LedStartup();
-
-/* Uncomment when calibrating touch screen
-	for(int i=0; i<6; i++)
-	{
-		Serial.print(touch_matrix[i]); Serial.print(" ");
-	}
-	Serial.println();
-*/
 
 	if(!(CAN_OK == CAN.begin(CAN_1000KBPS, MCP_CS))){
 		warning.current = 0;
@@ -90,17 +85,18 @@ void loop(){
 
 	if(c_time - l_time_10 > ten_hz){
 		diag_shift = 0;
-		uint16_t ts_btn = ts_btn_pressed();
-
 		int colors [2] = {0x0, 0x00FF00};
+
+		uint16_t ts_btn = ts_btn_pressed();
 		switch(ts_btn){
 		case 0:
+		// no 0th button
+		// represents the no button press case, reset debounce timers
 			diag_fuel_deb.Reset();
 			launch_rpm_minus.Reset();
 			launch_rpm_plus.Reset();
 			launch_thresh_minus.Reset();
 			launch_thresh_plus.Reset();
-		// no 0th button
 			break;
 		case 1:
 		// case 1, shift light diagnostics

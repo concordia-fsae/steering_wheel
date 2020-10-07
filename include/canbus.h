@@ -8,20 +8,13 @@
 // Interfaces Used 
 #include "mcp_can_stm.h"
 #include <inttypes.h>
+#include "MasterConfig.h"
 #include "VehicleData.h"
 
 
 /*
  * MACROS
  */
-
-#define MCP_CS PB12
-#define MCP_INT PB11
-
-#define can_timeout		5000		// time without CAN message before error occurs (ms)
-#define transmit_ID		0xA0		// CAN Bus transmit ID (messages will be sent with this ID)
-#define recv_id			0x80		// CAN Bus receive ID (messages with this ID will be read)
-
 // I/O state vals
 // word 0
 #define sw1_st	0b10000000

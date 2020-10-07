@@ -6,11 +6,6 @@ FT800IMPL_SPI FTImpl(SCR_CS_PIN,FT_PDN_PIN,FT_INT_PIN);
 sTagXY sTagxy;
 warning_S warning;
 
-uint32_t touch_matrix [6] = {32439, 4294966806, 4294236873, 4294966575, 4294947195, 18508876};
-
-
-
-// ---------------------------------- Helper Functions ----------------------------------
 
 /*
  * Start up the screen
@@ -23,13 +18,17 @@ bool boot_display(){
 	uint8_t counter = 0;
 	while(FT800_CHIPID != chipid){
 		shift_lights.SetAllColor(0xFF0000);
-//		Serial.print("Error in chip id read ");
-//		Serial.println(chipid,HEX);
+#if DEBUG && WAIT_FOR_SERIAL
+		Serial.print("Error in screen chip id read, retrying ");
+		Serial.println(chipid,HEX);
+#endif
 		FTImpl.Init(FT_DISPLAY_RESOLUTION, 0);
-		//delay(20);
 		chipid = FTImpl.Read32(FT_ROM_CHIPID);
 		counter++;
 		if (counter == 10){
+#if DEBUG && WAIT_FOR_SERIAL
+			Serial.println("Screen init failed, continuing without it");
+#endif
 			return 1;
 		}
 	}
@@ -44,13 +43,9 @@ bool boot_display(){
 	FTImpl.DisplayOn();
 	FTImpl.AudioOff();
 
-	// set touchscreen calibration values to what we've acquired
-	FTImpl.Write32(REG_TOUCH_TRANSFORM_A, touch_matrix[0]);
-	FTImpl.Write32(REG_TOUCH_TRANSFORM_B, touch_matrix[1]);
-	FTImpl.Write32(REG_TOUCH_TRANSFORM_C, touch_matrix[2]);
-	FTImpl.Write32(REG_TOUCH_TRANSFORM_D, touch_matrix[3]);
-	FTImpl.Write32(REG_TOUCH_TRANSFORM_E, touch_matrix[4]);
-	FTImpl.Write32(REG_TOUCH_TRANSFORM_F, touch_matrix[5]);
+	// handle touchscreen calibration
+	ts_eeprom_get();
+	// store touchscreen calibration
 	FTImpl.Cmd_SetMatrix();
 
 	// prepare the font to be displayed (gear and rpm)
@@ -95,11 +90,95 @@ uint16_t ts_btn_pressed(){
 }
 
 
+bool ts_eeprom_get(){
+#if RESET_TS_CALIBRATION
+	ts_eeprom_write(touch_cal_default);
+	return 0;
+#endif
+	uint16_t w1, w2;
+	uint32_t cals [TS_CAL_LEN];
+	for(uint16_t i=TS_CAL_START; i<TS_CAL_LEN*2; i+=2){
+		bool read_error = EEPROM.read(i, &w1) != EEPROM_OK
+						|| EEPROM.read(i+1, &w2) != EEPROM_OK;
+		cals[i/2] = (w1 << 16) | w2;
+
+		bool empty = cals[i/2] == 0xFFFFFFFF;
+
+		if(read_error || empty){
+#if DEBUG && WAIT_FOR_SERIAL
+			const char *error = read_error ? "Error reading from EEPROM"
+										: "EEPROM empty";
+			Serial.print(error);
+			Serial.println(", resetting default calibration data");
+#endif
+			// eeprom error, write defaults
+			ts_eeprom_write(touch_cal_default);
+			return 1;
+		}
+
+#if DEBUG && WAIT_FOR_SERIAL
+		Serial.print("Value read from EEPROM position ");
+		Serial.print(i); Serial.print(": ");
+		Serial.println(cals[i/2]);
+#endif
+
+	}
+	return ts_write_regs(cals);
+}
+
+
+void ts_eeprom_write(const uint32_t (&vals) [TS_CAL_LEN]){
+	uint8_t i = TS_CAL_START;
+	for(auto &val : vals){
+		EEPROM.write(i, val>>16);
+		EEPROM.write(i+1, val & 0xFFFF);
+		i += 2;
+		// not going to bother error checking since we check on
+		// bootup and there's not really anything to do about it
+		// errors at this point
+#if DEBUG && WAIT_FOR_SERIAL
+		Serial.print("Writing "); Serial.print(val);
+		Serial.print(" to EEPROM position "); Serial.println(i-2);
+#endif
+	}
+}
+
+
+bool ts_write_regs(uint32_t (&vals) [TS_CAL_LEN]){
+	uint32_t address = REG_TOUCH_TRANSFORM_A;
+	bool error = false;
+	for(auto &val : vals){
+		FTImpl.Write32(address, val);
+		if(FTImpl.Read32(address) != val){
+			error = true;
+#if DEBUG && WAIT_FOR_SERIAL
+			Serial.println("Error writing to screen register");
+#endif
+		}
+		address += 4;
+	}
+	return error;
+}
+
+
+void ts_read_regs(){
+	uint32_t address = REG_TOUCH_TRANSFORM_A;
+	uint32_t cal [TS_CAL_LEN];
+	for(uint16_t i=TS_CAL_START; i<TS_CAL_LEN*2; i+=2){
+		cal[i/2] = FTImpl.Read32(address);
+		address += 4;
+	}
+
+	ts_eeprom_write(cal);
+}
+
+
 /*
  * If called, prompts the user to click on 6 points on the screen.
  * Generates calibration data
 */
 void calibrate_display(){
+	// check if calibration data is stored in EEPROM
 	FTImpl.DLStart();
 
 	FTImpl.Cmd_Calibrate(0);
@@ -107,12 +186,7 @@ void calibrate_display(){
 	FTImpl.DLEnd();
 	FTImpl.Finish();
 
-	touch_matrix[0] = FTImpl.Read32(REG_TOUCH_TRANSFORM_A);
-	touch_matrix[1] = FTImpl.Read32(REG_TOUCH_TRANSFORM_B);
-	touch_matrix[2] = FTImpl.Read32(REG_TOUCH_TRANSFORM_C);
-	touch_matrix[3] = FTImpl.Read32(REG_TOUCH_TRANSFORM_D);
-	touch_matrix[4] = FTImpl.Read32(REG_TOUCH_TRANSFORM_E);
-	touch_matrix[5] = FTImpl.Read32(REG_TOUCH_TRANSFORM_F);
+	ts_read_write();
 }
 
 
@@ -129,6 +203,7 @@ void make_pill(int x, int y)		// coords are in the form {x, y}
 	FTImpl.Vertex2ii(x + 25, y + 15, 0, 0);
 	FTImpl.End();
 }
+
 
 void error_overlay(){
 	FTImpl.Begin(FT_RECTS);
@@ -326,6 +401,7 @@ void common_display()
 	}
 }
 
+
 void launch_display(){
 
 	FTImpl.ColorRGB(255, 255, 255);
@@ -358,7 +434,6 @@ void launch_display(){
 	FTImpl.Tag(7);
 	FTImpl.Cmd_Button(414, 170, 48, 48, 27, 0, "+");
 	FTImpl.DLEnd();
-
 
 	common_display();
 }

@@ -6,6 +6,7 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <inttypes.h>
+#include "MasterConfig.h"
 #include "VehicleData.h"
 #include "shiftlights.h"
 #include "canbus.h"
@@ -14,26 +15,13 @@
 #include "Debouncer.h"
 
 
-
-// pin that is connected to rst
-#define RST PB0
-
-
 // TODO: replace all of this with a timer class
 extern uint32_t c_time;
 uint32_t l_time_50 = 0;		    // last time a 50Hz event occured
 uint32_t l_time_10 = 0;		    // last time a 10Hz event occured
 uint32_t l_time_5 = 0;			// last time a 5Hz event occured
 uint32_t l_time_1 = 0;			// last time a 1Hz event occured
-
-
-// constants for each refresh rate
-uint16_t fifty_hz = 20;
-uint16_t ten_hz = 100;
-uint16_t five_hz = 200;
-uint16_t one_hz = 1000;
 // end todo
-
 
 // debounce vars
 Debouncer remote_start = Debouncer(500, 0);
