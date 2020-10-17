@@ -74,5 +74,6 @@ void ts_eeprom_write(const uint32_t (&)[TS_CAL_LEN]);
 extern ShiftLights shift_lights;		// bring in shiftligts object so we can control them
 extern FT800IMPL_SPI FTImpl;			// define screen obj
 extern warning_S warning;				// define the warning struct above
+extern SPIClass SPI_2;
 
 #endif // SCREEN_H

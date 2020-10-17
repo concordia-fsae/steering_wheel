@@ -13,6 +13,10 @@ warning_S warning;
 bool boot_display(){
 	uint32_t chipid;
 	FTImpl.Init(FT_DISPLAY_RESOLUTION, 0);		//configure the display to the WQVGA
+
+	// set the clock div such that the SPI frequency < 30MHz (ft800 max)
+	SPI_2.setClockDivider(SPI_CLOCK_DIV4);
+
 	chipid = FTImpl.Read32(FT_ROM_CHIPID);
 	/* Identify the chip */
 	uint8_t counter = 0;
