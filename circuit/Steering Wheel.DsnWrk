@@ -1,0 +1,24 @@
+[ProjectGroup]
+Version=1.0
+[Project1]
+ProjectPath=..\..\altium_data\Device Sheets\ESP32-WROOM\ESP32-WROOM.PrjPcb
+[Project2]
+ProjectPath=..\..\altium_data\Libraries\Dummy Parts\Dummy Parts.LibPkg
+[Project3]
+ProjectPath=..\..\altium_data\Device Sheets\MCP2515 Module\MCP2515 Module.PrjPcb
+[Project4]
+ProjectPath=..\..\altium_data\Device Sheets\1ms Debouncer\1ms Debouncer.PrjPcb
+[Project5]
+ProjectPath=..\..\altium_data\Device Sheets\(3V-16V)-5V Regulator\(3V-16V)-5V Regulator.PrjPcb
+[Project6]
+ProjectPath=..\..\altium_data\Device Sheets\STM32F411CEU6\STM32F411CEU6.PrjPcb
+[Project7]
+ProjectPath=..\..\altium_data\Libraries\Crystals\Crystals.LibPkg
+[Project8]
+ProjectPath=..\..\altium_data\Device Sheets\10ms Debouncer\10ms Debouncer.PrjPcb
+[Project9]
+ProjectPath=Steering Wheel.PrjPcb
+[Project10]
+ProjectPath=..\..\altium_data\Libraries\Solder Jumpers\Solder Jumpers.LibPkg
+[Project11]
+ProjectPath=..\..\altium_data\Libraries\Solder Pads\Solder Pads.LibPkg
