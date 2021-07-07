@@ -16,7 +16,7 @@
 
 
 // TODO: replace all of this with a timer class
-extern uint32_t c_time;
+extern volatile uint32_t &c_time;
 uint32_t l_time_50 = 0;		    // last time a 50Hz event occured
 uint32_t l_time_10 = 0;		    // last time a 10Hz event occured
 uint32_t l_time_5 = 0;			// last time a 5Hz event occured
